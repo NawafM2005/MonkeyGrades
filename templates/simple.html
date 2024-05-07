@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Monkey Grades Tracker</title>
+        <link rel="stylesheet" type="text/css" href="/static/stylesimple.css">
+        <link rel="shortcut icon"
+        href="/static/monkey_1f412.png"
+        type="image/x-icon">
+    </head>
+
+    <header>
+        <div class="logo"><a href="{% url 'home' %}">Monkey Grades</a></div>
+        <nav>
+            <ul>
+                {% if user.is_authenticated %}
+                <li><a href="/signout" id="signout_button">Sign Out</a></li>
+                <li><a href="/dashboard">Complex Calculator</a></li>
+                {% else %}
+                <li><a href="/signin">Complex Calculator</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <body>
+        <div class="main">
+            <div class="avg_calculator">
+                <h3>Grade Calculator</h3>
+                <table id="gradeTable">
+                    <thead id="head">
+                        <tr>
+                            <th>Assignment</th>
+                            <th>Grade (%)</th>
+                            <th>Weight (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="body_table">
+                        <tr>
+                            <td><input type="text" name="assignment" placeholder="Optional"></td>
+                            <td><input type="text" name="grade" placeholder="Required" required></td>
+                            <td><input type="text" name="weight" placeholder="Required" required></td>
+                            <td id="remove_btn" onclick="remove_row(this)">X</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div id="buttons">
+                    <button type="button" onclick="addRow()" id="add_row_btn">Add Row</button>
+                    <br><br>
+                    <button type="button" onclick="calculate()" id="calculate_btn">Calculate</button>
+                </div>
+    
+                <div id="grade_text">
+                    <label for="">Avg Grade:</label>
+                    <input type="text" id="grade_box" disabled>
+                </div>
+            </div>
+            <div class="pass_grade">
+                <h3>What Grade to Pass?</h3>
+                <div class="pass_grade_inner">
+                    <div id="goals_inputs_fields">
+                        <div id="goals_input_boxes">
+                            <label for="">Current Grade (%):</label>
+                            <input type="text" id="curr_grade" placeholder="Required" required>
+        
+                            <br><br>
+        
+                            <label for="">Grade Goal (%):</label>
+                            <input type="text" id="grade_goal" placeholder="Required" required>
+        
+                            <br><br>
+        
+                            <label for="">Final Worth (%):</label>
+                            <input type="text" id="final_worth" placeholder="Required" required>
+    
+                            <br><br>
+                        </div>
+                        
+                        <div id="goal_btn">
+                            <button type="button" onclick="calculate_goal()" id="calculate_btn">Calculate</button>
+                        </div>
+                    </div>
+                    
+                    <div id="goal_text">
+                        <label for="">Grade Needed</label>
+                        <br>
+                        <input type="text" id="goal_box" disabled>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+
+<script>
+    function addRow() {
+        var table = document.getElementById("gradeTable");
+        var lastRow = table.rows[table.rows.length - 1].cloneNode(true); // Clone the last row
+
+        // Clear input values in the cloned row
+        var inputs = lastRow.getElementsByTagName("input");
+        for (var i = 0; i < inputs.length; i++) {
+            inputs[i].value = "";
+            inputs[i].setAttribute("required", true); // Make input required
+        }
+
+        // Insert the cloned row as a new row at the end of the table
+        table.appendChild(lastRow);
+    }
+
+    function calculate() {
+    // Get the table
+    var table = document.getElementById("gradeTable");
+
+    // Initialize variables to store total grade and total weight
+    var totalGrade = 0;
+    var totalWeight = 0;
+
+    // Initialize a flag to check if all required fields are filled
+    var allFieldsFilled = true;
+
+    // Loop through each row in the table
+    for (var i = 1; i < table.rows.length; i++) { // Start from index 1 to skip the header row
+        var row = table.rows[i];
+
+        // Get the grade and weight input elements from the current row
+        var gradeInput = row.cells[1].getElementsByTagName("input")[0];
+        var weightInput = row.cells[2].getElementsByTagName("input")[0];
+
+        // Parse the grade and weight values to numbers
+        var grade = parseFloat(gradeInput.value);
+        var weight = parseFloat(weightInput.value);
+
+        // Check if any required field is empty
+        if (isNaN(grade) || isNaN(weight)) {
+            allFieldsFilled = false;
+            break;
+        }
+
+        if (grade < 0 ||  weight < 0) {
+            alert('Grades cannot be negative');
+            return
+        }
+
+        // Add the grade * weight to the total grade
+        totalGrade += grade * weight;
+
+        // Add the weight to the total weight
+        totalWeight += weight;
+    }
+
+    // If all required fields are filled, calculate the final grade
+    if (allFieldsFilled) {
+        // Calculate the final grade
+        var finalGrade = totalGrade / totalWeight;
+
+        // Set the calculated grade to the input element
+        var gradeBox = document.getElementById("grade_box");
+        gradeBox.value = finalGrade.toFixed(2) + "%"; // Display the final grade with 2 decimal places
+    } else {
+        // Alert the user to fill all required fields
+        alert("Please fill all required fields before calculating.");
+    }
+}
+
+function calculate_goal() {
+    try {
+        // Get the info
+        var curr_grade = parseFloat(document.getElementById("curr_grade").value) / 100;
+        var grade_goal = parseFloat(document.getElementById("grade_goal").value) / 100;
+        var final_worth = parseFloat(document.getElementById("final_worth").value) / 100;
+
+        // Check if all required fields are valid numbers
+        if (isNaN(curr_grade) || isNaN(grade_goal) || isNaN(final_worth)) {
+            alert("Invalid input: Please enter valid numbers for Current Grade, Grade Goal, and Final Worth.");
+        }
+        else if (curr_grade < 0 ||  grade_goal < 0 || final_worth < 0) {
+            alert('Values Cannot be Negative');
+            return
+        }
+        else {
+            // Calculate the final grade (if inputs are valid)
+            var finalGrade = ((grade_goal - (curr_grade * (1 - final_worth)))/ final_worth) * 100;
+
+            // Set the calculated grade to the input element
+            var gradeBox = document.getElementById("goal_box");
+            gradeBox.value = finalGrade.toFixed(2) + "%"; // Display the final grade with 2 decimal places
+        }
+    } catch (error) {
+        alert("Invalid input: Please enter valid numbers for Current Grade, Grade Goal, and Final Worth.");
+    }
+}
+
+function remove_row(tdElement) {
+    var row = tdElement.parentNode; // Get the parent of the td, which is the <tr> element
+    if (row.rowIndex !== 1) { // Check if it's not the first row
+        row.remove(); // Remove the row from the table
+    } else {
+        alert("You cannot remove the first row.");
+    }
+}
+
+</script>

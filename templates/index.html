@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Monkey Grades Tracker</title>
+        <link rel="stylesheet" type="text/css" href="/static/styleindex.css">
+        <script src="https://kit.fontawesome.com/577783cd50.js" crossorigin="anonymous"></script>
+        <link rel="shortcut icon"
+        href="/static/monkey_1f412.png"
+        type="image/x-icon">
+    </head>
+
+    <header>
+        <div class="logo"><a href="{% url 'home' %}">Monkey Grades</a></div>
+        <nav>
+            <ul>
+                <li><a href="/signup">Sign Up</a></li>
+                <li><a href="/signin">Sign In</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <body>
+        <div class="main">
+            <h3 id="welcome_text">Welcome to Monkey Grades Tracker</h3>
+            <main id="projects">
+                <div id="text">
+                    <p id="proj_more">Pick Calculator</p>
+                </div>
+        
+                <div>
+                    <div class="work_list">
+                        <a class="work" href="/simple">
+                            <div>
+                                <img src="/static/simple_calculator.jpeg">
+                                <div class="layer">
+                                    <h3 style="font-size: 35px; font-weight: bold;">Simple Calculator</h3>
+                                    <p>Quick Grade Calculator</p>
+                                </div>
+                            </div>
+                        </a>
+                        {% if user.is_authenticated %}
+                            <a class="work" href="/dashboard">
+                                <div>
+                                    <img src="/static/complex_calculator.jpeg">
+                                    <div class="layer">
+                                        <h3 style="font-size: 35px; font-weight: bold;">Complex Calculator</h3>
+                                        <p>View & Save Courses (Requires Account)</p>
+                                    </div>
+                                </div>
+                            </a>
+                        {% else %}
+                            <a class="work" href="/signin">
+                                <div>
+                                    <img src="/static/complex_calculator.jpeg">
+                                    <div class="layer">
+                                        <h3 style="font-size: 35px; font-weight: bold;">Complex Calculator</h3>
+                                        <p>View & Save Courses (Requires Account)</p>
+                                    </div>
+                                </div>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </main>
+        </div>
+    </body>
+
+</html>

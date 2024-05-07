@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Monkey Grades Tracker</title>
+        <link rel="stylesheet" type="text/css" href="/static/styledashboard.css">
+        <link rel="shortcut icon"
+        href="/static/monkey_1f412.png"
+        type="image/x-icon">
+    </head>
+
+    <header>
+        <div class="logo"><a href="{% url 'home' %}">Monkey Grades</a></div>
+        <nav>
+            <ul>
+                {% if user.is_authenticated %}
+                <li><a href="/signout" id="signout_button">Sign Out</a></li>
+                <li><a href="/simple" id="signout_button">Simple Calculator</a></li>
+                {% else %}
+                <li><a href="/signup">Sign Up</a></li>
+                <li><a href="/signin">Sign In</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <body>
+        <div class="main"> 
+            <h3>Hello {{fname}}</h3>
+            <p class="avg_text">Overall Avg: {{avg}}</p>
+            <div id="course_btns">
+                <ul>
+                    <li><button onclick="enable_data_entry_course('add')">Add Course</button></li>
+                    <li><button onclick="enable_data_entry_course('remove')">Remove Course</button></li>
+                </ul>
+            </div>
+            {% if messages %}
+                {% for message in error_message %}
+                    <p class="error_message">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+            <div id="course_tables">
+                {% for course, data in course_data.items %}
+                <div class="{{ course.name }}">
+                    <h3>{{ course.name }}</h3>
+                    <table id="{{ course.name }}">
+                        <thead id="head">
+                            <tr>
+                                <th>Assignment</th>
+                                <th>Grade (%)</th>
+                                <th>Weight (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="body_table">
+                            {% for grade in data.grades %}
+                                <tr>
+                                    <td style="display: none;">{{ course.name }}</td>
+                                    <td>{{ grade.assignment }}</td>
+                                    <td>{{ grade.grade }}</td>
+                                    <td>{{ grade.weight }}</td>
+                                    <td id="remove_btn" onclick="remove_this_data(this)">X</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div id="buttons">
+                        <button type="button" id="calculate_btn" onclick="enable_data_entry('{{ course.name }}')">Add Data</button>
+                    </div>
+
+                    <div id="grade_text">
+                        <label for="">Avg Grade: {{ data.average_grade }}</label>
+                    </div>
+
+                    <div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
+            
+                    <div class="modal-content" id="dataEntryModal" style="display: none;">
+                        <form id="data_entry_form" action="/dashboard" method="post">
+                            {% csrf_token %}
+                            <div>
+                                <label for="course">Course:</label>
+                                <input type="text" id="course" name="course" value="{{course.name}}"/>
+                
+                                <br><br>
+
+                                <label for="assignment">Assignment:</label>
+                                <input type="text" id="assignment" name="assignment" placeholder="Optional">
+                
+                                <br><br>
+                
+                                <label for="grade">Grade:</label>
+                                <input type="text" id="grade" name="grade" placeholder="Required" required>
+                
+                                <br><br>
+                
+                                <label for="weight">Weight:</label>
+                                <input type="text" id="weight" name="weight" placeholder="Required" required>
+                            </div>
+
+                            <br>
+            
+                            <button type="submit" id="calculate_btn">Add</button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+    </body>
+
+    <div class="course-overlay" id="courseOverlay" onclick="closeModal_course()"></div>
+            
+                    <div class="modal-content_course" id="dataEntryModal_course" style="display: none;">
+                        <form id="data_entry_form_courses" action="" method="post">
+                            {% csrf_token %}
+                            <div>
+                                <label for="course">Course:</label>
+                                <input type="text" id="course" name="course" required/>
+                            </div>
+                            <br>
+                            <button type="submit" id="course_edit_btn">Add</button>
+                        </form>
+                    </div>
+</html>
+
+<script>
+    function addRow() {
+        var table = document.getElementById("gradeTable");
+        var lastRow = table.rows[table.rows.length - 1].cloneNode(true); // Clone the last row
+
+        // Clear input values in the cloned row
+        var inputs = lastRow.getElementsByTagName("input");
+        for (var i = 0; i < inputs.length; i++) {
+            inputs[i].value = "";
+            inputs[i].setAttribute("required", true); // Make input required
+        }
+
+        // Insert the cloned row as a new row at the end of the table
+        table.appendChild(lastRow);
+    }
+
+    function enable_data_entry(){
+        var modalOverlay = document.getElementById("modalOverlay");
+        var dataEntryModal = document.getElementById("dataEntryModal");
+        modalOverlay.style.display = "block";
+        dataEntryModal.style.display = "block";
+    }
+
+    function closeModal() {
+        // Hide the modal overlay and modal content
+        var modalOverlay = document.getElementById("modalOverlay");
+        var dataEntryModal = document.getElementById("dataEntryModal");
+        modalOverlay.style.display = "none";
+        dataEntryModal.style.display = "none";
+    }
+
+    function enable_data_entry_course(action){
+        var modalOverlay = document.getElementById("courseOverlay");
+        var dataEntryModal = document.getElementById("dataEntryModal_course");
+        var submitBtn = document.getElementById("course_edit_btn");
+        var form = document.getElementById("data_entry_form_courses");
+
+        if (action == 'add'){
+            form.setAttribute('action', '/add_course');
+            submitBtn.innerText = 'Add';
+        }
+        else{
+            form.setAttribute('action', '/remove_course');
+            submitBtn.innerText = 'Remove';
+        }
+        modalOverlay.style.display = "block";
+        dataEntryModal.style.display = "block";
+    }
+
+    function closeModal_course() {
+        // Hide the modal overlay and modal content
+        var modalOverlay = document.getElementById("courseOverlay");
+        var dataEntryModal = document.getElementById("dataEntryModal_course");
+        modalOverlay.style.display = "none";
+        dataEntryModal.style.display = "none";
+    }
+
+    function remove_this_data(tdElement) {
+        var row = tdElement.parentNode; // Get the parent of the td, which is the <tr> element
+        
+        // Get the assignment, grade, and weight values from the row
+        var assignment = row.cells[1].innerText;
+        var grade = row.cells[2].innerText;
+        var weight = row.cells[3].innerText;
+        var course = row.cells[0].innerText;
+        
+        // Create a hidden form to submit the data to the backend for deletion
+        var form = document.createElement('form');
+        form.setAttribute('method', 'post');
+        form.setAttribute('action', '/dashboard'); // Replace with the actual URL endpoint
+        
+        // Create hidden input fields for each data item
+        var assignmentInput = document.createElement('input');
+        assignmentInput.setAttribute('type', 'hidden');
+        assignmentInput.setAttribute('name', 'assignment');
+        assignmentInput.setAttribute('value', assignment);
+        form.appendChild(assignmentInput);
+        
+        var gradeInput = document.createElement('input');
+        gradeInput.setAttribute('type', 'hidden');
+        gradeInput.setAttribute('name', 'grade');
+        gradeInput.setAttribute('value', grade);
+        form.appendChild(gradeInput);
+        
+        var weightInput = document.createElement('input');
+        weightInput.setAttribute('type', 'hidden');
+        weightInput.setAttribute('name', 'weight');
+        weightInput.setAttribute('value', weight);
+        form.appendChild(weightInput);
+
+        // Create a hidden input field to send the course information
+        var courseInput = document.createElement('input');
+        courseInput.setAttribute('type', 'hidden');
+        courseInput.setAttribute('name', 'course');
+        courseInput.setAttribute('value', course);
+        form.appendChild(courseInput);
+        
+        // Create a hidden input field to indicate data deletion
+        var deleteInput = document.createElement('input');
+        deleteInput.setAttribute('type', 'hidden');
+        deleteInput.setAttribute('name', 'delete_data');
+        deleteInput.setAttribute('value', 'true');
+        form.appendChild(deleteInput);
+
+        // Add CSRF token
+        var csrfToken = document.createElement('input');
+        csrfToken.setAttribute('type', 'hidden');
+        csrfToken.setAttribute('name', 'csrfmiddlewaretoken');
+        csrfToken.setAttribute('value', getCookie('csrftoken'));
+        form.appendChild(csrfToken);
+        
+        // Append the form to the document body and submit it
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    // Function to get CSRF token from cookie
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function enable_data_entry(courseName){
+        var modalOverlay = document.getElementById("modalOverlay");
+        var dataEntryModal = document.getElementById("dataEntryModal");
+        
+        // Populate the course input field with the course name
+        document.getElementById("course").value = courseName;
+
+        modalOverlay.style.display = "block";
+        dataEntryModal.style.display = "block";
+    }
+
+    function add_course(){
+
+    }
+
+    function remove_course(){
+        
+    }
+
+</script>

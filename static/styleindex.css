@@ -1,0 +1,170 @@
+/* CSS for header */
+header {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 30px;
+    margin-right: 30px;
+    height: 100%;
+    backdrop-filter: blur(8px);
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    padding-left: 20px;
+    padding-right: 20px;
+    font-size: 20px;
+}
+
+nav li {
+    margin-right: 10px; /* Adjust as needed */
+    margin-left: 50px;
+}
+
+nav li:last-child {
+    margin-right: 0;
+}
+
+nav ul li a:hover {
+    background: red;
+    transition: .3s;
+    cursor: pointer;
+    color: white;
+}
+
+nav ul li a {
+    text-decoration: none;
+    font-weight: bold;
+    text-shadow: 6px 6px 10px rgba(0, 0, 0, 0.5); /* Set the text shadow */
+    transition: 0.8s;
+    background: rgb(255, 255, 255);
+    padding: 25px 35px;
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.logo a{
+    color: rgb(252, 252, 252);
+    font-family: "Times New Roman", sans-serif;
+    font-weight: bold;
+    font-size: 35px;
+    letter-spacing: 3px;
+    display: inline-block; /* Ensures that the box only takes the space it needs */
+    padding-top: 10px;
+    text-decoration: none;
+    background-color: rgb(1, 50, 50);
+    border-radius: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+}
+
+.logo :hover {
+    transition: .3s;
+    cursor: pointer;
+    color: purple;
+    background-color: white;
+}
+
+/* CSS for body content */
+body {
+    padding-top: 10px; /* Adjust this value to match the height of your header */
+    /* Set background image */
+    background-image: url(/static/monkey.jpeg);
+    /* Adjust background properties */
+    background-size: auto;
+    background-position: center;
+    background-repeat: repeat;
+    background-attachment: fixed;
+    padding-top: 30px;
+}
+
+.main{
+    background-color: beige;
+    color: black;
+    font-family: "Times New Roman", sans-serif;
+    font-weight: bold;
+    font-size: 26px;
+    letter-spacing: 3px;
+    text-align: center;
+    border-radius: 10px; /* Add some rounding to the corners */
+    padding: 20px;
+    margin-top: 100px;
+}
+
+
+.work_list {
+    background-color: transparent;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 600px);
+    grid-auto-rows: 300px;
+    grid-column-gap: 50px; /* Horizontal gap */
+    grid-row-gap: 80px; /* Vertical gap */   
+    padding-top: 50px; 
+    margin-bottom: 80px;
+    justify-content: center;
+    align-items: center;
+}
+
+.work {
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    border: 4px solid white;
+    width: 100%; 
+    height: 100%;
+}
+
+.work:hover img{
+    transform: scale(1.1);
+    transition: .8s;
+}
+
+.work img{
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    display: block;
+    transition: transform 0.5s;
+}
+
+.layer {
+    width: 100%;
+    height: 100%;
+    color: white;
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgb(213, 89, 255));
+    border-radius: 10px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0px, 40px;
+    text-align: center;
+    font-size: 15px;
+    transition: height 0.5s;
+}
+
+.layer:hover h3{
+    color: rgb(207, 248, 72);
+    transition: 0.5s;
+}
+
+.layer:hover p{
+    color: rgb(0, 0, 0);
+    transition: 0.5s;
+}
+
+
+#welcome_text{
+    background: transparent;
+    color: red;
+    font-weight: bold;
+    font-size: 45px;
+    text-shadow: 6px 6px 10px rgba(110, 20, 245, 0.5); /* Set the text shadow */
+}
